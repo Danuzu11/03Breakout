@@ -63,6 +63,16 @@ class StickPower(PowerUp):
         
         
         # AH Y RECUERDEN MODIFICAR EL ARRAY QUE HAY EN LOS PARAMETROS DE PLAYSTATE PARA AGREGAR MAS PODERES Y CREEN BOLITAS DISTINTAS 
+        # ES ESTE: 
+        # self.powerups_array = [
+        #     "CannonBalls",
+        #     "TwoMoreBall",
+        #     "ExtraLife",
+        # ]
+        
+        # Y RECUERDEN CAMBIAR EL INIT DE ESTA CLASE POR OTRO NUMERO   super().__init__(x, y, 3) PORQUE SI NO NO CAMBIARA LA BOLITA QUE LO ACTIVE EL SPRITE PUES EL DIBUJITO 
+        
+        # Y PRENDAN VELON !! ><
             
         
         
