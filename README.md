@@ -25,3 +25,18 @@ Implementation of the SlowMotion power that reduces the speed of all balls on sc
 3. **PlayState.py**
 - Integration of the power into the power array
 - Timer management and effect activation/deactivation
+
+4. **Shoots.py**
+- Implement the functionality and render of the fireballs
+
+5. **Paddle.py**
+- Add cannons new parameters for render cannons with the paddle
+
+6. **States...**
+- Addded new parameters for keep powers active or desactivate them
+
+7. **Settings**
+- Definition of new keys , frames and sprites for be used in the game
+
+8. **Utilities**
+- Add frames.py and sprites.py to obtain sprites of the spritesheets and use them in the most optimal way 
