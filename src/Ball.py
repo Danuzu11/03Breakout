@@ -27,6 +27,8 @@ class Ball:
         self.vx = 0
         self.vy = 0
 
+        self.speed_factor = 1.0
+
         self.texture = settings.TEXTURES["spritesheet"]
         self.frame = random.randint(0, 6)
         self.active = True
@@ -60,8 +62,8 @@ class Ball:
         return self.get_collision_rect().colliderect(another.get_collision_rect())
 
     def update(self, dt: float) -> None:
-        self.x += self.vx * dt
-        self.y += self.vy * dt
+        self.x += self.vx * dt * self.speed_factor 
+        self.y += self.vy * dt * self.speed_factor
 
     def render(self, surface):
         surface.blit(

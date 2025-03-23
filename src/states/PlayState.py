@@ -33,8 +33,11 @@ class PlayState(BaseState):
         self.cannon_active = params.get("cannon_active", False)
         self.cannon_ammo = params.get("cannon_ammo", 0)
         self.magnet_active = params.get("magnet_active", False)
-        self.magnet_timer = 0  # Tiempo restante del magnetismo (en segundos)
-        self.stuck_balls = []   # Lista de (ball, offset_x)
+        self.magnet_timer = 0  
+        self.stuck_balls = []   
+        self.slow_active = params.get("slow_active", False)
+        self.slow_timer = 0  
+
         self.level = params["level"]
         self.score = params["score"]
         self.lives = params["lives"]
@@ -50,10 +53,10 @@ class PlayState(BaseState):
         self.powerups = params.get("powerups", [])
         
         self.powerups_array = [
-             "CannonBalls",
+            "CannonBalls",
             "TwoMoreBall",
-            "ExtraLife",            
             "StickPower",
+            "SlowMotion",
             
         ]
 
@@ -73,7 +76,7 @@ class PlayState(BaseState):
         if self.cannon_active == False:
             self.paddle.has_cannons = False
 
-        # Temporizador del poder magnetismo
+        # Timer StickPower   
         if self.magnet_active:
             self.magnet_timer -= dt
             if self.magnet_timer <= 0:
@@ -84,7 +87,18 @@ class PlayState(BaseState):
                         ball.vy = -random.randint(120, 160)
                 self.stuck_balls.clear()
 
-        
+        # Timer and activation SlowMotion 
+        if self.slow_active: 
+            for ball in self.balls:
+                ball.speed_factor = 0.5            
+            self.slow_timer -= dt          
+            if self.slow_timer <= 0:
+                self.slow_active = False
+                self.slow_timer = 0
+                for ball in self.balls:
+                    ball.speed_factor = 1   
+
+
         for cannoball in self.cannonBalls:
             cannoball.update(dt)
             
@@ -105,9 +119,6 @@ class PlayState(BaseState):
             ball.solve_world_boundaries()
 
             # Check collision with the paddle
-
-
-
             if ball.collides(self.paddle):
                 settings.SOUNDS["paddle_hit"].stop()
                 settings.SOUNDS["paddle_hit"].play()
@@ -115,7 +126,6 @@ class PlayState(BaseState):
                 if self.magnet_active:
                    ball.vx = 0
                    ball.vy = 0
-        # Posicionamos la pelota justo encima del paddle
                    ball.y = self.paddle.y - ball.height
 
                    offset_x = ball.x - self.paddle.x
@@ -124,12 +134,7 @@ class PlayState(BaseState):
                     ball.rebound(self.paddle)
                     ball.push(self.paddle)
 
-            # if ball.collides(self.paddle):
-            #     settings.SOUNDS["paddle_hit"].stop()
-            #     settings.SOUNDS["paddle_hit"].play()
-            #     ball.rebound(self.paddle)
-            #     ball.push(self.paddle)
-
+        
             for ball, offset_x in self.stuck_balls:
                 ball.x = self.paddle.x + offset_x
                 ball.y = self.paddle.y - ball.height
@@ -162,11 +167,11 @@ class PlayState(BaseState):
                 )
                 self.paddle.inc_size()
 
-            # AQUI DEBEMOS COLOCAR TODOS LOS PODERES EXTRA QUE GENERREMOS :V
+           
             if random.random() < 1:
                 r = brick.get_collision_rect()
                 
-                # ESTO SIMPLIMENTE AGREGA EL PODER EN LA LISTA DE PODERES
+               
                 power = random.choice(self.powerups_array)
                 self.powerups.append(
                     self.powerups_abstract_factory.get_factory(power).create(
@@ -294,7 +299,7 @@ class PlayState(BaseState):
         elif input_id == "shoot" and input_data.pressed:
             Shoots.shoot_cannon(self)
         elif input_id == "pause" and input_data.pressed:
-            print("tengo bolas")
+  
             if self.stuck_balls:
                 for ball, _ in self.stuck_balls:
                         ball.vx = random.randint(-80, 80)
