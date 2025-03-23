@@ -123,7 +123,7 @@ class PlayState(BaseState):
                 settings.SOUNDS["paddle_hit"].stop()
                 settings.SOUNDS["paddle_hit"].play()
     
-                if self.magnet_active:
+                if self.magnet_active and ball not in [b for b, _ in self.stuck_balls]:
                    ball.vx = 0
                    ball.vy = 0
                    ball.y = self.paddle.y - ball.height
@@ -134,10 +134,18 @@ class PlayState(BaseState):
                     ball.rebound(self.paddle)
                     ball.push(self.paddle)
 
-        
-            for ball, offset_x in self.stuck_balls:
-                ball.x = self.paddle.x + offset_x
-                ball.y = self.paddle.y - ball.height
+            if ball not in [b for b, _ in self.stuck_balls]:
+                if ball.collides(self.paddle):
+                    brick = self.brickset.get_colliding_brick(ball.get_collision_rect())
+                    if brick is None:
+                        brick.hit()
+                        self.score += brick.score()
+                        ball.rebound(brick)
+
+
+            # for ball, offset_x in self.stuck_balls:
+            #     ball.x = self.paddle.x + offset_x
+            #     ball.y = self.paddle.y - ball.height
 
             # Check collision with brickset
             if not ball.collides(self.brickset):
@@ -179,6 +187,9 @@ class PlayState(BaseState):
                     )
                 )
 
+        for ball, offset_x in self.stuck_balls:
+            ball.x = self.paddle.x + offset_x
+            ball.y = self.paddle.y - ball.height
         # Removing all balls that are not in play
         self.balls = [ball for ball in self.balls if ball.active]
 

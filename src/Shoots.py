@@ -33,10 +33,11 @@ class Shoots:
         self.animation_timer = 0
         self.animation_interval = 0.01
         self.current_frame = 0
+        self.colission_max = 5
         # self.active = True
 
     def get_collision_rect(self) -> pygame.Rect:
-        return pygame.Rect(self.x, self.y, self.width, self.height)
+        return pygame.Rect(self.x - self.colission_max, self.y, self.width, self.height)
 
     def solve_world_boundaries(self) -> None:
         r = self.get_collision_rect()
@@ -66,7 +67,7 @@ class Shoots:
            cannonSprite,
            (self.x,self.y)
         )
-        
+        pygame.draw.rect(surface, (255, 0, 0), self.get_collision_rect(), 1)
         self.solve_world_boundaries()
 
     @staticmethod
