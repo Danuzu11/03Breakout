@@ -51,29 +51,36 @@ class Paddle:
     def update(self, dt: float) -> None:
         next_x = self.x + self.vx * dt
 
-        if self.vx < 0:
-            self.x = max(0, next_x)
+        if self.has_cannons:
+            if self.vx < 0:
+                self.x = max(self.cannonWidth, next_x)
+            else:
+                self.x = min(settings.VIRTUAL_WIDTH - self.width - self.cannonWidth - 5, next_x)
         else:
-            self.x = min(settings.VIRTUAL_WIDTH - self.width, next_x)
+            if self.vx < 0:
+                self.x = max(0, next_x)
+            else:
+                self.x = min(settings.VIRTUAL_WIDTH - self.width, next_x)
 
     def render(self, surface: pygame.Surface) -> None:
         
-        surface.blit(self.texture, (self.x, self.y), self.frames[self.skin][self.size])
-        
+        surface.blit(self.texture, (self.x , self.y), self.frames[self.skin][self.size])
+
         if self.has_cannons:
             cannonSprite = obtainImageSpriteSheet("cannons",self.cannonWidth,self.cannonHeigth,None)
             y_correction = self.y - self.height + self.cannonHeigth/20
             
+            rigth_cannon_x= min(self.x + self.width - 5,settings.VIRTUAL_WIDTH - self.cannonWidth)
             # RIGTH CANNON
             surface.blit(
                 cannonSprite,
-                (self.x + self.width - 5, y_correction)
+                (rigth_cannon_x, y_correction)
             )
-            
+            left_cannon_x = max(0,self.x - self.cannonWidth + 2.5)
             # LEFT CANNON
             surface.blit(
                 cannonSprite,
-                (self.x - self.cannonWidth + 2.5 , y_correction)
+                (left_cannon_x , y_correction)
             )
                 
         

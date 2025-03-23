@@ -46,7 +46,6 @@ class Shoots:
         elif r.top > settings.VIRTUAL_HEIGHT:
             self.in_play = False
 
-
     def collides(self, another: Any) -> bool:
         return self.get_collision_rect().colliderect(another.get_collision_rect())
 
@@ -117,6 +116,10 @@ class Shoots:
                     
                 play_state.cannonBalls.append(shootLeft)
                 play_state.cannonBalls.append(shootRight)
+            else:
+                play_state.cannon_active = False
+                play_state.cannon_ammo = 0
+                play_state.paddle.has_cannons = False
         else:
-            print("eje cuidadito perro, deja la maña ")
+            print("No cannon")
         
