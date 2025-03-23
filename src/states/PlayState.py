@@ -32,6 +32,9 @@ class PlayState(BaseState):
         self.cannonBalls = params["cannonBalls"]
         self.cannon_active = params.get("cannon_active", False)
         self.cannon_ammo = params.get("cannon_ammo", 0)
+        self.magnet_active = params.get("magnet_active", False)
+        self.magnet_timer = 0  # Tiempo restante del magnetismo (en segundos)
+        self.stuck_balls = []   # Lista de (ball, offset_x)
         self.level = params["level"]
         self.score = params["score"]
         self.lives = params["lives"]
@@ -47,9 +50,11 @@ class PlayState(BaseState):
         self.powerups = params.get("powerups", [])
         
         self.powerups_array = [
-            "CannonBalls",
+             "CannonBalls",
             "TwoMoreBall",
-            "ExtraLife",
+            "ExtraLife",            
+            "StickPower",
+            
         ]
 
         if not params.get("resume", False):
@@ -67,6 +72,18 @@ class PlayState(BaseState):
 
         if self.cannon_active == False:
             self.paddle.has_cannons = False
+
+        # Temporizador del poder magnetismo
+        if self.magnet_active:
+            self.magnet_timer -= dt
+            if self.magnet_timer <= 0:
+                self.magnet_active = False
+                self.magnet_timer = 0
+                for ball, _ in self.stuck_balls:
+                        ball.vx = random.randint(-80, 80)
+                        ball.vy = -random.randint(120, 160)
+                self.stuck_balls.clear()
+
         
         for cannoball in self.cannonBalls:
             cannoball.update(dt)
@@ -88,11 +105,34 @@ class PlayState(BaseState):
             ball.solve_world_boundaries()
 
             # Check collision with the paddle
+
+
+
             if ball.collides(self.paddle):
                 settings.SOUNDS["paddle_hit"].stop()
                 settings.SOUNDS["paddle_hit"].play()
-                ball.rebound(self.paddle)
-                ball.push(self.paddle)
+    
+                if self.magnet_active:
+                   ball.vx = 0
+                   ball.vy = 0
+        # Posicionamos la pelota justo encima del paddle
+                   ball.y = self.paddle.y - ball.height
+
+                   offset_x = ball.x - self.paddle.x
+                   self.stuck_balls.append((ball,offset_x))
+                else:
+                    ball.rebound(self.paddle)
+                    ball.push(self.paddle)
+
+            # if ball.collides(self.paddle):
+            #     settings.SOUNDS["paddle_hit"].stop()
+            #     settings.SOUNDS["paddle_hit"].play()
+            #     ball.rebound(self.paddle)
+            #     ball.push(self.paddle)
+
+            for ball, offset_x in self.stuck_balls:
+                ball.x = self.paddle.x + offset_x
+                ball.y = self.paddle.y - ball.height
 
             # Check collision with brickset
             if not ball.collides(self.brickset):
@@ -254,7 +294,14 @@ class PlayState(BaseState):
         elif input_id == "shoot" and input_data.pressed:
             Shoots.shoot_cannon(self)
         elif input_id == "pause" and input_data.pressed:
-            self.state_machine.change(
+            print("tengo bolas")
+            if self.stuck_balls:
+                for ball, _ in self.stuck_balls:
+                        ball.vx = random.randint(-80, 80)
+                        ball.vy = -random.randint(120, 160)
+                self.stuck_balls.clear()
+            else:
+                self.state_machine.change(
                 "pause",
                 level=self.level,
                 score=self.score,
@@ -268,4 +315,9 @@ class PlayState(BaseState):
                 cannonBalls=self.cannonBalls,
                 cannon_active=self.cannon_active,
                 cannon_ammo=self.cannon_ammo,
+                magnet_active=self.magnet_active,
+                magnet_timer=self.magnet_timer,
+                stuck_balls=self.stuck_balls 
             )
+     
+                    

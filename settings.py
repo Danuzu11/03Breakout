@@ -36,6 +36,7 @@ input_handler.InputHandler.set_keyboard_action(input_handler.KEY_LEFT, "move_lef
 input_handler.InputHandler.set_keyboard_action(input_handler.KEY_SPACE, "pause")
 input_handler.InputHandler.set_keyboard_action(input_handler.KEY_z, "shoot")
 
+
 # Size of our actual window
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720

@@ -16,10 +16,13 @@ class StickPower(PowerUp):
     def __init__(self, x: int, y: int) -> None:
         # RECUERDEN QUE EL TERCER PARAMETRO SELECCIONA EL TIPO DE BOLITA QUE RECIBIRA ES DECIR EL SPRITE DE LA BOLITA
         # EJEMPLO SI SELECCIONAN 1 SERA LA BOLITA QUE APARECE DE PRIMERO EN EL SPRITESHEET (REVISA LOS ASSET)
-        super().__init__(x, y, 3)
+        super().__init__(x, y, 4)
 
     def take(self, play_state: TypeVar("PlayState")) -> None:
-        
+        paddle = play_state.paddle
+        play_state.magnet_active = True
+        play_state.magnet_timer = 10  # Poder activo por 10 segundos
+
         # AQUI COMO L EXPLIQUE A VERO PUEDEN USAR TODOS LOS PARAMETROS QUE USA PLAY STATE CON play_state.paddle o x cosa
         
         # ALGO QUE SE ME OCURRIO ES QUE SI DETECTA COLISION AGARRE LA PELOTA EN ESPECIFICO (RECUERDEN QUE HAY POSIBILIDAD DE VARIAS)
