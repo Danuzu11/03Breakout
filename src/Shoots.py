@@ -67,7 +67,7 @@ class Shoots:
            cannonSprite,
            (self.x,self.y)
         )
-        pygame.draw.rect(surface, (255, 0, 0), self.get_collision_rect(), 1)
+        #pygame.draw.rect(surface, (255, 0, 0), self.get_collision_rect(), 1)
         self.solve_world_boundaries()
 
     @staticmethod
